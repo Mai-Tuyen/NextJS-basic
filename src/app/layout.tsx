@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { NavigationMenuDemo } from "@/app/(Header)/NavigationMenu";
+import { ThemeProvider } from "next-themes";
+import { ModeToggle } from "@/app/(Header)/DarkMode";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -27,7 +30,20 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <header className="flex justify-between items-center p-4 bg-gray-100 dark:bg-gray-800 fixed top-0 w-full">
+            <div className="flex items-center gap-4">
+              <NavigationMenuDemo />
+            </div>
+            <ModeToggle />
+          </header>
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );
