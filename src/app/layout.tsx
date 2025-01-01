@@ -3,7 +3,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { NavigationMenuDemo } from "@/app/(Header)/NavigationMenu";
 import { ThemeProvider } from "next-themes";
-import { ModeToggle } from "@/app/(Header)/DarkMode";
+import { ModeToggle } from "@/app/(main-layout)/(Header)/DarkMode";
+import MenuHeaderCustom from "@/app/(main-layout)/(Header)/MenuHeaderCustom";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -26,7 +27,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
@@ -37,12 +38,10 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <header className="flex justify-between items-center p-4 bg-gray-100 dark:bg-gray-800 fixed top-0 w-full">
-            <div className="flex items-center gap-4">
-              <NavigationMenuDemo />
-            </div>
-            <ModeToggle />
+            {/* <NavigationMenuDemo /> */}
+            <MenuHeaderCustom />
           </header>
-          {children}
+          <div className="mt-40">{children}</div>
         </ThemeProvider>
       </body>
     </html>
