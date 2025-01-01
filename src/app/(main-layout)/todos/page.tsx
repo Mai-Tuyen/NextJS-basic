@@ -1,12 +1,15 @@
 import SearchForm from "@/app/(main-layout)/todos/_components/SearchForm";
 import TodoAdd from "@/app/(main-layout)/todos/_components/TodoAdd";
+import ToDoAdd2 from "@/app/(main-layout)/todos/_components/ToDoAdd2";
+import DeleteTodo from "@/app/(main-layout)/todos/delete/DeleteTodo";
 import { Todo } from "@/app/(main-layout)/todos/type";
 import { Params, SearchParams } from "@/app/globaltype";
+import { Button } from "@/components/ui/button";
+import { revalidatePath } from "next/cache";
 import Link from "next/link";
 import React from "react";
 
 const getTodoList = async (q: string = "") => {
-  debugger;
   const response = await fetch(
     `${process.env.NEXT_PUBLIC_SERVER_API}/todos${
       q?.length > 0 ? `?title=${q}` : ""
@@ -36,15 +39,16 @@ export default async function TodoPage({
       <h1>Todo List</h1>
       <SearchForm />
       {todoList.map((todo) => (
-        <Link href="/todos/[id]" as={`/todos/${todo.id}`} key={todo.id}>
-          <h3>
-            <span>
-              Title:{todo.title} Content: {todo.content}
-            </span>
-          </h3>
-        </Link>
+        <div key={todo.id} className="flex justify-between w-[200]">
+          <Link href="/todos/[id]" as={`/todos/${todo.id}`}>
+            Title:{todo.title}
+          </Link>
+          <Link href={`/todos/edit/${todo.id}`}>Edit</Link>
+          <DeleteTodo id={todo.id} />
+        </div>
       ))}
-      <TodoAdd />
+      {/* <TodoAdd />  form add "use client" */}
+      <ToDoAdd2 />
     </>
   );
 }

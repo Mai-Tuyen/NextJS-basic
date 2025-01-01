@@ -26,7 +26,7 @@ export default function TodoAdd() {
   };
 
   return (
-    <div>
+    <>
       <form onSubmit={handleSubmit}>
         <input
           type="text"
@@ -42,6 +42,6 @@ export default function TodoAdd() {
         />
         <Button type="submit">Add</Button>
       </form>
-    </div>
+    </>
   );
 }

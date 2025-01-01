@@ -11,7 +11,6 @@ export default function FilterForm() {
     const formData = new FormData(e.currentTarget);
     const status = formData.get("status") as string;
     const keyword = formData.get("keyword") as string;
-    console.log(status, keyword);
     const query = new URLSearchParams({ status, keyword }).toString();
     router.push(`${pathname}?${query}`);
   };

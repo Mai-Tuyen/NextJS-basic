@@ -7,7 +7,6 @@ import React from "react";
 
 export default function MenuHeaderCustom() {
   const pathName = usePathname();
-  console.log(pathName);
   return (
     <nav className=" border-gray-200 bg-gray-100 dark:bg-gray-800 flex justify-between w-full items-center">
       <div className="max-w-screen-xl flex flex-wrap gap-5 items-center p-4">
