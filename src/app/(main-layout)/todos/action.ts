@@ -1,15 +1,13 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
-
-export const createNewTodo = async (data: FormData) => {
+export const createNewTodo = async (prevState: unknown, data: FormData) => {
   try {
     const title = data.get("title") as string;
     const content = data.get("content") as string;
     if (!title || !content) throw new Error("Missing title or content");
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_SERVER_API}/todos1`,
+      `${process.env.NEXT_PUBLIC_SERVER_API}/todos`,
       {
         method: "POST",
         headers: {
@@ -23,7 +21,7 @@ export const createNewTodo = async (data: FormData) => {
       revalidatePath("/todos");
     }
   } catch (error) {
-    return { success: false, messsage: (error as Error).message };
+    return { success: false, message: (error as Error).message };
   }
 };
 
@@ -51,6 +49,6 @@ export const updateTodoServerAction = async (data: FormData) => {
       return { success: response.ok, message: "Update to do success" };
     }
   } catch (error) {
-    return { success: false, messsage: (error as Error).message };
+    return { success: false, message: (error as Error).message };
   }
 };

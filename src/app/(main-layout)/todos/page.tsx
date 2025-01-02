@@ -39,12 +39,16 @@ export default async function TodoPage({
       <h1>Todo List</h1>
       <SearchForm />
       {todoList.map((todo) => (
-        <div key={todo.id} className="flex justify-between w-[200]">
+        <div key={todo.id} className="flex justify-between w-[500] mx-5 my-4">
           <Link href="/todos/[id]" as={`/todos/${todo.id}`}>
             Title:{todo.title}
           </Link>
-          <Link href={`/todos/edit/${todo.id}`}>Edit</Link>
-          <DeleteTodo id={todo.id} />
+          <div className="todo__action">
+            <Link href={`/todos/edit/${todo.id}`}>
+              <Button className="bg-cyan-300 mx-3">Edit</Button>
+            </Link>
+            <DeleteTodo id={todo.id} />
+          </div>
         </div>
       ))}
       {/* <TodoAdd />  form add "use client" */}
