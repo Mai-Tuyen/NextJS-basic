@@ -13,7 +13,13 @@ const getTodoList = async (q: string = "") => {
   const response = await fetch(
     `${process.env.NEXT_PUBLIC_SERVER_API}/todos${
       q?.length > 0 ? `?title=${q}` : ""
-    }`
+    }`,
+    {
+      // cache: "force-cache",
+      next: {
+        revalidate: 50,
+      },
+    }
   );
   if (!response.ok) throw new Error("Có lỗi khi fetch data todos");
   return response.json();
