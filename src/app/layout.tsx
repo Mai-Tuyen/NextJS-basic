@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { NavigationMenuDemo } from "@/app/(Header)/NavigationMenu";
+// import "bootstrap/dist/css/bootstrap.min.css";
 import { ThemeProvider } from "next-themes";
-import { ModeToggle } from "@/app/(main-layout)/(Header)/DarkMode";
 import MenuHeaderCustom from "@/app/(main-layout)/(Header)/MenuHeaderCustom";
+import { Toaster } from "@/components/ui/sonner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -38,10 +38,10 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <header className="flex justify-between items-center p-4 bg-gray-100 dark:bg-gray-800 fixed top-0 w-full">
-            {/* <NavigationMenuDemo /> */}
             <MenuHeaderCustom />
           </header>
           <div className="mt-40">{children}</div>
+          <Toaster />
         </ThemeProvider>
       </body>
     </html>
