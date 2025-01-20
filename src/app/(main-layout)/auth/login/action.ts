@@ -1,5 +1,4 @@
 "use server";
-
 import { cookies } from "next/headers";
 
 const getProfile = async (access_token: string) => {
@@ -20,6 +19,12 @@ export const handleLoginServerAction = async (
 ) => {
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
+  if (email.includes("aa")) {
+    return {
+      success: false,
+      message: "Email must not contain 'aa'",
+    }
+  }
   const response = await fetch(
     `${process.env.NEXT_PUBLIC_SERVER_AUTH_API}/auth/login`,
     {
