@@ -1,0 +1,8 @@
+{
+    "AboutMe": {
+      "title": "Xin chào!",
+      "description": "Bạn đang sử dụng ngôn ngữ tiếng Việt",
+      "client-test": "Kiểm tra i18n ở client component "
+    }
+}
+  

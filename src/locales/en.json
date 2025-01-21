@@ -1,0 +1,7 @@
+{
+    "AboutMe": {
+      "title": "Hello!",
+      "description": "You are using English",
+      "client-test": "Test i18n at client component "
+    }
+}
