@@ -17,16 +17,18 @@ export default function LocaleSwitcher() {
   };
 
   return (
-    <select
-      defaultValue={locale}
-      onChange={handleChange}
-      className="border border-gray-300 font-medium focus:outline-none focus-visible:ring rounded-md"
-    >
-      {appConfig.locales.map((elt) => (
-        <option key={elt} value={elt}>
-          <span className="text-sm">{elt.toLowerCase()}</span>
-        </option>
-      ))}
-    </select>
+    <>
+      <select
+        defaultValue={locale}
+        onChange={handleChange}
+        className="border border-gray-300 font-medium focus:outline-none focus-visible:ring rounded-md"
+      >
+        {appConfig?.locales?.map((elt) => (
+          <option key={elt} value={elt}>
+            {elt.toLowerCase()}
+          </option>
+        ))}
+      </select>
+    </>
   );
 }
