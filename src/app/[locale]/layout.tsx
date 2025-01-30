@@ -5,6 +5,7 @@ import "./globals.css";
 import { ThemeProvider } from "next-themes";
 import { Toaster } from "@/components/ui/sonner";
 import MenuHeaderCustom from "./(main-layout)/(Header)/MenuHeaderCustom";
+import AppProvider from "@/components/provider/QueryClientProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -31,18 +32,20 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <header className="flex justify-between items-center p-4 bg-gray-100 dark:bg-gray-800 fixed top-0 w-full">
-            <MenuHeaderCustom />
-          </header>
-          <div className="mt-40">{children}</div>
-          <Toaster />
-        </ThemeProvider>
+        <AppProvider>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <header className="flex justify-between items-center p-4 bg-gray-100 dark:bg-gray-800 fixed top-0 w-full">
+              <MenuHeaderCustom />
+            </header>
+            <div className="mt-40">{children}</div>
+            <Toaster />
+          </ThemeProvider>
+        </AppProvider>
       </body>
     </html>
   );

@@ -1,7 +1,11 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { cookies } from "next/headers";
+
 export const createNewTodo = async (prevState: unknown, data: FormData) => {
+  const cookieStore = await cookies();
+  const localeCookie = cookieStore.get("NEXT_LOCALE");
   try {
     const title = data.get("title") as string;
     const content = data.get("content") as string;
@@ -18,7 +22,7 @@ export const createNewTodo = async (prevState: unknown, data: FormData) => {
     );
     if (!response.ok) throw new Error("Failed to create new todo");
     if (response.ok) {
-      revalidatePath("/todos");
+      revalidatePath(`/${localeCookie?.value || "vi"}/todos`);
     }
   } catch (error) {
     return { success: false, message: (error as Error).message };

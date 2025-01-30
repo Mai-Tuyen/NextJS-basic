@@ -12,7 +12,6 @@ export default function FormRegister() {
     handleRegisterServerAction,
     null
   );
-  console.log(state);
   return (
     <form action={formAction}>
       <div className="mb-3">

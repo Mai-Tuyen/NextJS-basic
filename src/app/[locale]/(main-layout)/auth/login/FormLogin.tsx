@@ -12,7 +12,6 @@ export default function FormLogin() {
     handleLoginServerAction,
     null
   );
-  console.log("Stateeee", state);
   if (!state?.success) {
     toast.error(state?.message);
   } else if (state?.success) {
@@ -22,7 +21,6 @@ export default function FormLogin() {
   useEffect(() => {
     if (state?.success) {
       const userInfo = state?.data?.userInfo;
-      console.log("userInfo", userInfo);
 
       if (userInfo.role === "admin") {
         router.push("/admin");

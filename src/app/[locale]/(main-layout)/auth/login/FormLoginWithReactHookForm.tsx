@@ -53,7 +53,6 @@ export default function LoginPreview() {
       formData.append("password", values.password);
       setIsLoadingSubmit(true);
       const res = await handleLoginServerAction(null, formData);
-      console.log("resssForm: ", res);
       if (res?.success) {
         toast("Login successful");
       }
