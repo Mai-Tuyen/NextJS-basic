@@ -3,6 +3,7 @@ import Link from "next/link";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { signIn } from "next-auth/react";
 
 import {
   Form,
@@ -25,10 +26,12 @@ import { PasswordInput } from "@/components/ui/password-input";
 import { handleLoginServerAction } from "./action";
 import { ToastContainer, toast } from "react-toastify";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 // Improved schema with additional validation rules
 const formSchema = z.object({
-  email: z.string().email({ message: "Invalid email address" }),
+  // email: z.string().email({ message: "Invalid email address" }),
+  email: z.string(),
   password: z
     .string()
     .min(6, { message: "Password must be at least 6 characters long" })
@@ -36,6 +39,7 @@ const formSchema = z.object({
 });
 
 export default function LoginPreview() {
+  const router = useRouter();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -46,26 +50,43 @@ export default function LoginPreview() {
 
   const [isLoadingSubmit, setIsLoadingSubmit] = useState(false);
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
+  // async function onSubmit(values: z.infer<typeof formSchema>) {
+  //   try {
+  //     const formData = new FormData();
+  //     formData.append("email", values.email);
+  //     formData.append("password", values.password);
+  //     setIsLoadingSubmit(true);
+  //     const res = await handleLoginServerAction(null, formData);
+  //     if (res?.success) {
+  //       toast("Login successful");
+  //     }
+  //     if (!res?.success) {
+  //       form.setError("email", { message: res?.message });
+  //     }
+  //   } catch (error) {
+  //     console.error("Form submission error", error);
+  //     toast.error("Failed to submit the form. Please try again.");
+  //   } finally {
+  //     setIsLoadingSubmit(false);
+  //   }
+  // }
+
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      const formData = new FormData();
-      formData.append("email", values.email);
-      formData.append("password", values.password);
-      setIsLoadingSubmit(true);
-      const res = await handleLoginServerAction(null, formData);
-      if (res?.success) {
-        toast("Login successful");
+      const res = await signIn("credentials", {
+        username: values.email,
+        password: values.password,
+        expiresInMins: 1,
+        redirect: false,
+      });
+      if (!res?.error) {
+        router.push("/auth/get-me");
       }
-      if (!res?.success) {
-        form.setError("email", { message: res?.message });
-      }
+      console.log("resloginClient", res);
     } catch (error) {
       console.error("Form submission error", error);
-      toast.error("Failed to submit the form. Please try again.");
-    } finally {
-      setIsLoadingSubmit(false);
     }
-  }
+  };
 
   return (
     <div className="flex flex-col min-h-[50vh] h-full w-full items-center justify-center px-4">
@@ -90,7 +111,7 @@ export default function LoginPreview() {
                         <Input
                           id="email"
                           placeholder="johndoe@mail.com"
-                          type="email"
+                          type="input"
                           autoComplete="email"
                           {...field}
                         />

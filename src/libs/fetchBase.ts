@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { notFound } from "next/navigation";
-
+import { auth } from "@/auth";
 const isClient = typeof window !== "undefined";
 type CustomOptions = Omit<RequestInit, "method">;
 const ENTITY_ERROR_STATUS = 422;
@@ -65,10 +65,11 @@ const request = async <Response>(
   } = {
     "Content-Type": "application/json",
   };
-  // add accessToken from next auth
-  //   if (accessToken) {
-  //     baseHeaders.Authorization = `Bearer ${accessToken}`;
-  //   }
+  //add accessToken from next auth
+  const session: any = await auth();
+  if (session?.accessToken) {
+    baseHeaders.Authorization = `Bearer ${session?.accessToken}`;
+  }
   const res = await fetch(url, {
     ...options,
     headers: {
@@ -82,6 +83,7 @@ const request = async <Response>(
     notFound();
   }
   const payload: Response = await res.json();
+  console.log("Result from BE api", payload);
   const data = {
     status: res.status,
     payload,

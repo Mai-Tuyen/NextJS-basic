@@ -26,8 +26,8 @@ export const useGetPostDetailQuery = ({
 export const useAddPostMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (params: UpdatePostType) =>
-      demoTanstackQueryFetchRequest.addPost(params),
+    mutationFn: (body: UpdatePostType) =>
+      demoTanstackQueryFetchRequest.addPost(body),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["posts"],
