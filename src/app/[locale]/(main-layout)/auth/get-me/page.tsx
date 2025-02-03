@@ -1,7 +1,6 @@
 import authFetchRequest from "@/feature/auth/fetchRequest";
 export default async function GetMe() {
   const userCurrentInfo = await authFetchRequest.getCurrentUser();
-  // console.log("userCurrentInfo", userCurrentInfo);
   return (
     <>
       <div>Current user info</div>

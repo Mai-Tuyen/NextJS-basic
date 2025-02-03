@@ -3,7 +3,7 @@ import Link from "next/link";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { signIn } from "next-auth/react";
+import { signIn, SignInResponse } from "next-auth/react";
 
 import {
   Form,
@@ -27,6 +27,8 @@ import { handleLoginServerAction } from "./action";
 import { ToastContainer, toast } from "react-toastify";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { NextAuthLoginResponse } from "@/feature/auth/type";
+import { HttpError } from "@/feature/global/type";
 
 // Improved schema with additional validation rules
 const formSchema = z.object({
@@ -73,7 +75,7 @@ export default function LoginPreview() {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      const res = await signIn("credentials", {
+      const res: SignInResponse | undefined = await signIn("credentials", {
         username: values.email,
         password: values.password,
         expiresInMins: 1,
@@ -82,7 +84,12 @@ export default function LoginPreview() {
       if (!res?.error) {
         router.push("/auth/get-me");
       }
-      console.log("resloginClient", res);
+      if (res?.error) {
+        const errorLogin: HttpError = JSON.parse(res.code as string);
+        toast.error(errorLogin?.payload?.message);
+      } else {
+        toast("Login successful");
+      }
     } catch (error) {
       console.error("Form submission error", error);
     }

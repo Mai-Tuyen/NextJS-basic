@@ -1,10 +1,10 @@
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
-import { authConfig } from "./auth.config";
+// import { authConfig } from "./auth.config";
 import { jwtDecode } from "jwt-decode";
 import authFetchRequest from "./feature/auth/fetchRequest";
-import { LoginRequest } from "./feature/auth/type";
-
+import { CustomLoginEntityError, CustomLoginError } from "./feature/auth/type";
+import { HTTP_STATUS_CODE } from "./feature/global/enum";
 /**
  * Takes a token, and returns a new token with updated
  * `accessToken` and `accessTokenExpires`. If an error occurs,
@@ -55,7 +55,7 @@ export const {
   signIn,
   signOut,
 } = NextAuth({
-  //   ...authConfig,
+    // ...authConfig,
   providers: [
     Credentials({
       credentials: {
@@ -65,15 +65,15 @@ export const {
       authorize: async (credentials) => {
         if (credentials === null) return null;
 
-        // try {
+        try {
         const res = await authFetchRequest.login({
-          username: credentials.username as string,
-          password: credentials.password as string,
+          username: credentials.username,
+          password: credentials.password,
           expiresInMins: 10,
         });
         console.log("resLoginAuth", res);
 
-        if (res.status == 200) {
+        if ([HTTP_STATUS_CODE.OK, HTTP_STATUS_CODE.CREATED].includes(res?.status)) {
           // accessing the accessToken returned by server
           const accessToken = res?.payload?.accessToken;
           const refreshToken = res?.payload?.refreshToken;
@@ -87,22 +87,28 @@ export const {
           };
         }
         return null;
-        // } catch (e) {
-        //   console.log("errror login11112", e);
-        //   return null;
-        // }
+        } catch (e) {
+          let errorLogin = JSON.parse(JSON.stringify(e));
+          if (errorLogin?.status === HTTP_STATUS_CODE.ENTITY_ERROR) {
+            throw new CustomLoginError(errorLogin)
+          }
+          else {
+            throw new CustomLoginEntityError(errorLogin)
+          }
+          return null;
+        }
       },
     }),
   ],
   callbacks: {
-    jwt: async ({ token, account, user }: any) => {
+    jwt: async ({ token, account, user }) => {
       // user is only available the first time a user signs in authorized
       // console.log(`In jwt callback - Token is ${JSON.stringify(token)}`);
 
       if (token.accessToken) {
         const decodedToken = jwtDecode(token.accessToken);
         // console.log(decodedToken);
-        token.accessTokenExpires = (decodedToken?.exp as number) * 1000;
+        token.accessTokenExpires = decodedToken?.exp  * 1000;
       }
 
       if (account && user) {
@@ -133,7 +139,7 @@ export const {
       //return token;
       // return refreshAccessToken(token);
     },
-    session: async ({ session, token }: any) => {
+    session: async ({ session, token }) => {
       // console.log(`In session callback - Token is ${JSON.stringify(token)}`);
       if (token) {
         session.accessToken = token.accessToken;
