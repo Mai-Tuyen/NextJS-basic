@@ -5,32 +5,27 @@ import { jwtDecode } from "jwt-decode";
 import authFetchRequest from "./feature/auth/fetchRequest";
 import { CustomLoginEntityError, CustomLoginError } from "./feature/auth/type";
 import { HTTP_STATUS_CODE } from "./feature/global/enum";
-/**
- * Takes a token, and returns a new token with updated
- * `accessToken` and `accessTokenExpires`. If an error occurs,
- * returns the old token and an error property
- */
+
 async function refreshAccessToken(token) {
-  console.log("Refreshing access token", token);
+  console.log("Đã vào hàm refresh token");
+  debugger
+  // console.log("Refreshing access token", token);
   try {
-    console.log("Beaarer token", `Bearer ${token.refreshToken}`);
+    // console.log("Beaarer token", `Bearer ${token.refreshToken}`);
 
-    const response = await fetch(
-      `${process.env.API_SERVER_BASE_URL}/api/auth/refresh`,
-      {
-        headers: {
-          Authorization: `Bearer ${token.refreshToken}`,
-        },
-      }
-    );
+    const response = await authFetchRequest.refreshToken({
+      refreshToken: token.refreshToken,
+      expiresInMins: 10,
+    })
 
-    console.log(response);
+    console.log("response refresh token from API",response);
 
-    const tokens = await response.json();
+    const tokens = response?.payload;
 
-    console.log(tokens);
+    console.log("new token in refresh token",tokens);
 
-    if (!response.ok) {
+    if (response.status !== HTTP_STATUS_CODE.OK) {
+      console.log("API refresh token không trả về 200")
       throw tokens;
     }
 
@@ -40,8 +35,7 @@ async function refreshAccessToken(token) {
       refreshToken: tokens.refreshToken ?? token.refreshToken, // Fall back to old refresh token
     };
   } catch (error) {
-    console.log(error);
-
+    console.log("Đã nhảy vào catch trong refresh token", error);
     return {
       ...token,
       error: "RefreshAccessTokenError",
@@ -56,6 +50,9 @@ export const {
   signOut,
 } = NextAuth({
     // ...authConfig,
+  // session: {
+  //   strategy: "jwt",
+  // },
   providers: [
     Credentials({
       credentials: {
@@ -69,9 +66,8 @@ export const {
         const res = await authFetchRequest.login({
           username: credentials.username,
           password: credentials.password,
-          expiresInMins: 10,
+          expiresInMins: 1,
         });
-        console.log("resLoginAuth", res);
 
         if ([HTTP_STATUS_CODE.OK, HTTP_STATUS_CODE.CREATED].includes(res?.status)) {
           // accessing the accessToken returned by server
@@ -79,7 +75,6 @@ export const {
           const refreshToken = res?.payload?.refreshToken;
 
           // You can make more request to get other information about the user eg. Profile details
-
           // return user credentials together with accessToken
           return {
             accessToken,
@@ -95,7 +90,6 @@ export const {
           else {
             throw new CustomLoginEntityError(errorLogin)
           }
-          return null;
         }
       },
     }),
@@ -103,11 +97,11 @@ export const {
   callbacks: {
     jwt: async ({ token, account, user }) => {
       // user is only available the first time a user signs in authorized
-      // console.log(`In jwt callback - Token is ${JSON.stringify(token)}`);
+      // console.log(`In jwt callback - Token is ${JSON.parse(JSON.stringify(token))}`);
 
       if (token.accessToken) {
         const decodedToken = jwtDecode(token.accessToken);
-        // console.log(decodedToken);
+        // console.log("decodedToken",decodedToken);
         token.accessTokenExpires = decodedToken?.exp  * 1000;
       }
 
@@ -116,38 +110,31 @@ export const {
         // console.log(`In jwt callback - account is ${JSON.stringify(account)}`);
 
         return {
-          // ...token,
+          ...token,
           accessToken: user.accessToken,
           refreshToken: user.refreshToken,
           // user,
         };
       }
-
-      // Return previous token if the access token has not expired yet
-      // console.log(
-      //   "**** Access token expires on *****",
-      //   token.accessTokenExpires,
-      //   new Date(token.accessTokenExpires)
-      // );
       if (Date.now() < token.accessTokenExpires) {
-        // console.log("**** returning previous token ******");
+        console.log("Access Token vẫn còn hạn")
         return token;
+      } else {
+        console.log("Access Token đã hết hạn")
+        return refreshAccessToken(token);
       }
-
-      // Access token has expired, try to update it
-      // console.log("**** Update Refresh token ******");
-      //return token;
-      // return refreshAccessToken(token);
     },
     session: async ({ session, token }) => {
-      // console.log(`In session callback - Token is ${JSON.stringify(token)}`);
+      debugger
+      console.log(`In session callback - Token is ${JSON.stringify(token)}`);
       if (token) {
         session.accessToken = token.accessToken;
         session.user = token.user;
+        session.error = token.error;
       }
-      // console.log(
-      //   `In session callback - Session is ${JSON.stringify(session)}`
-      // );
+      console.log(
+        `In session callback - Session is ${JSON.stringify(session)}`
+      );
       return session;
     },
   },

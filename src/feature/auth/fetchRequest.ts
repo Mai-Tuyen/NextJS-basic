@@ -3,6 +3,7 @@ import { LoginRequest, LoginResponse, RefreshTokenRequest } from "./type";
 const authFetchRequest = {
   login: (body: LoginRequest) =>
     fetchBase.post<LoginResponse>("https://dummyjson.com/auth/login", body),
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   getCurrentUser: () => fetchBase.get<any>("https://dummyjson.com/auth/me"),
   refreshToken: (body: RefreshTokenRequest) =>
     fetchBase.post("https://dummyjson.com/auth/refresh", body),

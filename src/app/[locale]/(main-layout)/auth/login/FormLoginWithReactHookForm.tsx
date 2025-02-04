@@ -27,7 +27,6 @@ import { handleLoginServerAction } from "./action";
 import { ToastContainer, toast } from "react-toastify";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { NextAuthLoginResponse } from "@/feature/auth/type";
 import { HttpError } from "@/feature/global/type";
 
 // Improved schema with additional validation rules

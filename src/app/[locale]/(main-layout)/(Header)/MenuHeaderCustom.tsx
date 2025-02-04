@@ -23,7 +23,7 @@ export default function MenuHeaderCustom() {
             height={40}
           />
           <span className="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">
-            MaiTuyen
+            IIG
           </span>
         </Link>
         <div className="flex md:order-2">
