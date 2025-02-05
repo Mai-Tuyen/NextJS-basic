@@ -19,7 +19,7 @@ async function refreshAccessToken(token) {
     })
 
     console.log("response refresh token from API",response);
-
+    debugger
     const tokens = response?.payload;
 
     console.log("new token in refresh token",tokens);
@@ -35,6 +35,7 @@ async function refreshAccessToken(token) {
       refreshToken: tokens.refreshToken ?? token.refreshToken, // Fall back to old refresh token
     };
   } catch (error) {
+    debugger
     console.log("Đã nhảy vào catch trong refresh token", error);
     return {
       ...token,
@@ -50,9 +51,10 @@ export const {
   signOut,
 } = NextAuth({
     // ...authConfig,
-  // session: {
-  //   strategy: "jwt",
-  // },
+  session: {
+    strategy: "jwt",
+    maxAge: 24 * 60 * 60, // 1 Day
+  },
   providers: [
     Credentials({
       credentials: {
@@ -61,14 +63,13 @@ export const {
       },
       authorize: async (credentials) => {
         if (credentials === null) return null;
-
         try {
         const res = await authFetchRequest.login({
           username: credentials.username,
           password: credentials.password,
           expiresInMins: 1,
         });
-
+        debugger
         if ([HTTP_STATUS_CODE.OK, HTTP_STATUS_CODE.CREATED].includes(res?.status)) {
           // accessing the accessToken returned by server
           const accessToken = res?.payload?.accessToken;
@@ -116,13 +117,15 @@ export const {
           // user,
         };
       }
-      if (Date.now() < token.accessTokenExpires) {
+      if (Date.now() < token.accessTokenExpires ) {
         console.log("Access Token vẫn còn hạn")
         return token;
-      } else {
+      } else if (token.error !== "RefreshAccessTokenError") {
+        debugger
         console.log("Access Token đã hết hạn")
         return refreshAccessToken(token);
       }
+      else return null
     },
     session: async ({ session, token }) => {
       debugger

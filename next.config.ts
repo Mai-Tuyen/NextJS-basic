@@ -8,7 +8,11 @@ const nextConfig: NextConfig = {
   // experimental: {
   //   dynamicIO: true,
   // },
-  
+  logging: {
+    fetches: {
+      fullUrl: true,
+    },
+  },
 };
 
 export default withNextIntl(nextConfig);
